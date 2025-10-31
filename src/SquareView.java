@@ -95,7 +95,6 @@ public class SquareView extends JPanel implements BoardView {
 
     /**
      * Refreshes the board visuals — currently empty.
-     * You can later use this to redraw stones, highlights, etc.
      */
     public void refreshBoard(Graphics2D g2) {
         // TODO: Implement stone drawing and board state updates here
@@ -129,11 +128,10 @@ public class SquareView extends JPanel implements BoardView {
      * Paints the Mancala board on the panel.
      */
     @Override
-    protected void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-
         drawEmptyBoard(g2);
-
+        
     }
 }
