@@ -6,11 +6,15 @@ class MancalaTest {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         //center 
-        frame.setLocationRelativeTo(null); // center window on screen
+        frame.setLocationByPlatform(true); // center window on screen
 
-        frame.setSize(550, 550);
-        frame.add(new SquareView());
-        frame.add(new MainMenu()); 
+        frame.setSize(1100, 550);
+        
+       //frame.add(new MetalBoard()); 
+        frame.add(new WoodenBoard());
+        //frame.add(new MainMenu()); 
+        
+        
         frame.setVisible(true);
         
     }

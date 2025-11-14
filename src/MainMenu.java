@@ -11,17 +11,13 @@ class MainMenu extends JComponent{
     JLabel label = new JLabel(title); 
     
     public MainMenu() {
-    	//label design
         label.setFont(new Font("SansSerif", Font.BOLD, 30));
         label.setForeground(Color.BLUE);
         label.setHorizontalAlignment(SwingConstants.CENTER);
 
-    	
     	setLayout(new BorderLayout()); 
-    	
     	add(label, BorderLayout.NORTH);
     	add(scrollPane, BorderLayout.CENTER);
-//    	scrollPane.setBounds(50, 50, 120, 80);
     		
     	
     }
@@ -30,9 +26,7 @@ class MainMenu extends JComponent{
     	
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        
-//        g2.drawString(title, x, y);
-        
+        //update if needed
     }
     
 	

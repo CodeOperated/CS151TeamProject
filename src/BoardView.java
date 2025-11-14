@@ -5,9 +5,9 @@ import java.awt.Shape;
 interface BoardView {
     void drawEmptyBoard(Graphics2D g2);
     
-    void refreshBoard(Graphics2D g2);
-    
     Shape boardShape();
+    
+    void updatePits(); 
     
     Shape pitShape(int row, int col);
     

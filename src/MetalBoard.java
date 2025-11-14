@@ -4,9 +4,9 @@ import javax.swing.*;
 import java.util.*;
 
 /**
- * A square Mancala board view implementation.
+ * A metal Mancala board view implementation.
  */
-public class SquareView extends JPanel implements BoardView {
+public class MetalBoard extends JPanel implements BoardView {
     private static final int BOARD_WIDTH = 1000;
     private static final int BOARD_HEIGHT = 400;
     private static final int MANCALA_HEIGHT = 200;
@@ -15,7 +15,12 @@ public class SquareView extends JPanel implements BoardView {
     private static final int STONE_SIZE = 10;
     private static final int ROWS = 2;
     private static final int COLS = 6;
-
+    
+    private static final Color gray = new Color(128, 128, 128); 
+    private static final Color lightGray = new Color(192, 192, 192); 
+    
+    ArrayList<Rectangle2D.Double> pits = new ArrayList<>();
+    
     Rectangle2D.Double pitA;
     Rectangle2D.Double pitB;
     
@@ -25,7 +30,9 @@ public class SquareView extends JPanel implements BoardView {
     public void drawEmptyBoard(Graphics2D g2) {
         Rectangle2D.Double body = new Rectangle2D.Double(50, 50, BOARD_WIDTH, BOARD_HEIGHT);
         g2.draw(body);
-
+        g2.setColor(gray);
+        g2.fill(body);
+        
         int pitSpacingX = 50;
         int pitSpacingY = 80;
 
@@ -47,7 +54,12 @@ public class SquareView extends JPanel implements BoardView {
                 y = startAtY + row * (PIT_SIZE + pitSpacingY);
                
                 Rectangle2D.Double pit = new Rectangle2D.Double(x, y, PIT_SIZE, PIT_SIZE);
+                pits.add(pit);
+
+                g2.setColor(lightGray);
                 g2.draw(pit);
+                
+                g2.fill(pit); 
                 String label; 
                 if (row == 0) {
                 	label = "B" + (6 - col);
@@ -58,7 +70,7 @@ public class SquareView extends JPanel implements BoardView {
                     
                     int textX = x + (PIT_SIZE - textWidth) / 2;
                     int textY = y - 10;
-
+                    
                     g2.drawString(label, textX, textY);
                 } else {
                 	label = "A" + (col + 1);
@@ -69,19 +81,16 @@ public class SquareView extends JPanel implements BoardView {
 
                     int textX = x + (PIT_SIZE - textWidth) / 2;
                     int textY = y + PIT_SIZE + 20 ;
+                    
                     g2.drawString(label, textX, textY);
-                    
-                    
                 }
                 
 
             }
-            
             pitA = new Rectangle2D.Double(startAtX + col * (PIT_SIZE + pitSpacingX), startAtY, MANCALA_WIDTH, MANCALA_HEIGHT);
           g2.drawString("Mancala A", startAtX + col * (PIT_SIZE + pitSpacingX), startAtY - 20); 
 
         }
-        
         
         //draw Mancala pits
         pitB = new Rectangle2D.Double(startAtX - (PIT_SIZE + pitSpacingX), startAtY, MANCALA_WIDTH, MANCALA_HEIGHT);
@@ -90,13 +99,14 @@ public class SquareView extends JPanel implements BoardView {
         g2.draw(pitA);
         g2.draw(pitB);
         
-        
+        g2.fill(pitA);
+        g2.fill(pitB);
     }
 
     /**
-     * Refreshes the board visuals — currently empty.
+     * Refreshes the pit visuals, since the pits are the only ones changing
      */
-    public void refreshBoard(Graphics2D g2) {
+    public void updatePits() {
         // TODO: Implement stone drawing and board state updates here
     	
     }
@@ -132,6 +142,7 @@ public class SquareView extends JPanel implements BoardView {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         drawEmptyBoard(g2);
-        
     }
+    
+    
 }
