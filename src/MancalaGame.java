@@ -7,29 +7,18 @@ public class MancalaGame {
 
     /**
      * Requests a mancala board design from user input
+     * @param design //replace with real type name
      * @return Strategy
      */
-    Strategy whatState() {
-
-        String input = "";
-
-
-        while (input != "E" && input != "e") {
-
-            System.out.println("Please enter a mancala board style:");
-            System.out.println("[S]quare");
-            System.out.println("[C]ircle");
-            System.out.println("[E]rmm... Actually, I don't want to play");
-
-            Scanner sc = new Scanner(System.in);
-
+    //TODO: Complete whatState with actual design strategy parameter passing in and replace switch cases
+    Strategy whatState(design ) {
 
             switch (input) {
                 case "S":
-                    this.Strategy = SquareView();//what is strategy
+                    this.Strategy = SteelView();//Replace with actual strategy name
                     break;
                 case "C":
-                    this.Strategy = CircleView();
+                    this.Strategy = WoodView();//Replace with actual strategy name
                     break;
                     case "E":
                         System.exit(0);
@@ -42,7 +31,6 @@ public class MancalaGame {
 
     public static void main(String[] args) {
 
-        Strategy design = whatState();
 
 
 
