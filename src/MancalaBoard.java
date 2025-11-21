@@ -1,9 +1,12 @@
+import java.util.ArrayList;
+
+
 /**
  * Virtual representation of a Mancala board with actions included, no rules are provided for turn taking
  *
  */
 public class MancalaBoard {
-    MancalaPit[14] man;
+    MancalaPit[] man = new MancalaPit[14];
     int playerAScore;
     int playerBScore;
 
@@ -11,7 +14,7 @@ public class MancalaBoard {
      * Constructs Mancala Board with default stone settings - leftmost playable pit is MancalaPit[0]
      */
     MancalaBoard(){
-        for(int i = 0; i < man.length){
+        for(int i = 0; i < man.length;){
             if (i != 6 && i != 13) man[i].setStoneNum(4);
             else continue;
 
@@ -23,7 +26,7 @@ public class MancalaBoard {
      * @param StartingStones
      */
     MancalaBoard(int StartingStones){
-        for(int i = 0; i < man.length){
+        for(int i = 0; i < man.length;){
             if (i != 6 && i != 13) man[i].setStoneNum(StartingStones);
             else continue;
         }
@@ -62,10 +65,10 @@ public class MancalaBoard {
 
         chosenPit.setStoneNum(0);
 
-        for (stonesInHand; stonesInHand > 0; stonesInHand--) {
+        for (int stones = stonesInHand; stones > 0; stones--) {
             index++;//starts on adjacent pit
             if (index >= 13) {
-                stonesInhand++; //returns stone due to skipping
+                stones++; //returns stone due to skipping
                 index = 0;//skips Score pit for player B, resets index because player B pit is last pit in array
                 continue;
             }
@@ -76,7 +79,7 @@ public class MancalaBoard {
 
         //capture function (fun fact: Waterfall playstyle would just make this a recursive function
         if (man[index].getStoneNum() == 1 && index < 6) {
-            man[6] += man[index].getStoneNum() + man[12-index].getStoneNum();
+            man[6].setStoneNum(man[6].getStoneNum() + man[index].getStoneNum() + man[12-index].getStoneNum());
             man[index].setStoneNum(0);
             man[12-index].setStoneNum(0);
         }
@@ -103,10 +106,10 @@ public class MancalaBoard {
 
         chosenPit.setStoneNum(0);
 
-        for (stonesInHand; stonesInHand > 0; stonesInHand--) {
+        for (int stones = stonesInHand; stones > 0; stones--) {
             index++;//starts on adjacent pit
             if (index == 6) {
-                stonesInHand++;//returns stone due to skipping
+                stones++;//returns stone due to skipping
                 index = 7;
                 //skips Score pit for player A
                 continue;
@@ -118,7 +121,7 @@ public class MancalaBoard {
 
         //capture function (fun fact: Waterfall playstyle would just make this a recursive function
         if (man[index].getStoneNum() == 1 && index > 6 && index != 13) {
-            man[13] += man[index].getStoneNum() + man[12-index].getStoneNum();
+            man[13].setStoneNum(man[13].getStoneNum() + man[index].getStoneNum() + man[12-index].getStoneNum());
             man[index].setStoneNum(0);
             man[12-index].setStoneNum(0);
         }
