@@ -17,11 +17,19 @@ class MainMenu extends JPanel{
         label.setFont(new Font("SansSerif", Font.BOLD, 30));
         label.setForeground(Color.BLUE);
         label.setHorizontalAlignment(SwingConstants.CENTER);
+<<<<<<< HEAD
         list.setFont(new Font("Arial", Font.PLAIN, 20)); 
         
     	setLayout(new BorderLayout()); 
     	add(label, BorderLayout.NORTH);
     	add(scrollPane, BorderLayout.CENTER);
+=======
+
+    	setLayout(new BorderLayout()); 
+    	add(label, BorderLayout.NORTH);
+    	add(scrollPane, BorderLayout.CENTER);
+    		
+>>>>>>> f2a796f2f13faf57dc9497aa487392ce1bf9e95d
     	
     	list.addListSelectionListener(e -> {
     		
