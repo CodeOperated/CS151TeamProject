@@ -34,7 +34,6 @@ public class MetalBoard extends JPanel implements BoardView {
     public void updatePits() {
     	
     	ArrayList<MancalaPit> manData = m.getBoard();
-    	
     	for (int i = 0; i < manData.size(); i++) {
     		PitPanel currPit = pits.get(i);
     		currPit.setStones(manData.get(i).getStoneNum());

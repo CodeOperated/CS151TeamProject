@@ -116,7 +116,6 @@ public class WoodenBoard extends JPanel implements BoardView {
                     pit.setBounds(x, y, PIT_SIZE, PIT_SIZE);
                     pits.add(pit);
                     add(pit);
-
                 }
             }
         }
