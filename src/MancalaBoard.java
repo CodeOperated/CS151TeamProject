@@ -1,32 +1,45 @@
+import java.util.ArrayList;
+
 /**
  * Virtual representation of a Mancala board with actions included, no rules are provided for turn taking
  *
  */
 public class MancalaBoard {
-    MancalaPit[14] man;
+
+    MancalaPit[] man = new MancalaPit[14];
     int playerAScore;
     int playerBScore;
 
     /**
      * Constructs Mancala Board with default stone settings - leftmost playable pit is MancalaPit[0]
      */
-    MancalaBoard(){
-        for(int i = 0; i < man.length){
-            if (i != 6 && i != 13) man[i].setStoneNum(4);
-            else continue;
-
-        }
+    public MancalaBoard() {
+        this(4);
     }
 
     /**
      * Constructs Mancala board with a custom set
      * @param StartingStones
      */
-    MancalaBoard(int StartingStones){
-        for(int i = 0; i < man.length){
-            if (i != 6 && i != 13) man[i].setStoneNum(StartingStones);
-            else continue;
+    public MancalaBoard(int StartingStones) {
+
+        // ---- Player A side ----
+        for (int i = 0; i <= 5; i++) {
+            man[i] = new PlayablePit(true, StartingStones);
         }
+
+        // A store
+        man[6] = new ScorePit(true);
+
+        // ---- Player B side ----
+        for (int i = 7; i <= 12; i++) {
+            man[i] = new PlayablePit(false, StartingStones);
+        }
+
+        // B store
+        man[13] = new ScorePit(false);
+
+        syncScores();
     }
 
     /**
@@ -34,15 +47,25 @@ public class MancalaBoard {
      * @param chosenPit
      * @return index
      */
-    int findmancalaPit(MancalaPit chosenPit){
-        int index = 0;
-
-        for (int i = 0; i < 13; i++){
-            if (man[i] == chosenPit){
-                index = i;
-            }
+    int findmancalaPit(MancalaPit chosenPit) {
+        for (int i = 0; i < man.length; i++) {
+            if (man[i] == chosenPit) return i;
         }
-        return index;
+        return -1;
+    }
+
+    /** Snapshot of the board counts (14 ints). */
+    public int[] snapshot() {
+        int[] s = new int[14];
+        for (int i = 0; i < 14; i++) s[i] = man[i].getStoneNum();
+        return s;
+    }
+
+    /** Restore board from a 14-int snapshot. */
+    public void restore(int[] snap) {
+        if (snap == null || snap.length != 14) throw new IllegalArgumentException("Bad snapshot");
+        for (int i = 0; i < 14; i++) man[i].setStoneNum(snap[i]);
+        syncScores();
     }
 
     /**
@@ -56,33 +79,32 @@ public class MancalaBoard {
      * 7-12 playable-B
      * 13 mancala-B
      */
-    public int PlayPitA(MancalaPit chosenPit){
-        int stonesInHand = chosenPit.getStoneNum();
+    public int PlayPitA(MancalaPit chosenPit) {
         int index = findmancalaPit(chosenPit);
+        if (index < 0 || index > 5) throw new IllegalArgumentException("Invalid pit for A");
 
+        int stonesInHand = chosenPit.getStoneNum();
         chosenPit.setStoneNum(0);
 
-        for (stonesInHand; stonesInHand > 0; stonesInHand--) {
-            index++;//starts on adjacent pit
-            if (index >= 13) {
-                stonesInhand++; //returns stone due to skipping
-                index = 0;//skips Score pit for player B, resets index because player B pit is last pit in array
-                continue;
-            }
-
+        while (stonesInHand > 0) {
+            index = (index + 1) % 14;
+            if (index == 13) continue; // skip B store
             man[index].setStoneNum(man[index].getStoneNum() + 1);
-
+            stonesInHand--;
         }
 
-        //capture function (fun fact: Waterfall playstyle would just make this a recursive function
-        if (man[index].getStoneNum() == 1 && index < 6) {
-            man[6] += man[index].getStoneNum() + man[12-index].getStoneNum();
-            man[index].setStoneNum(0);
-            man[12-index].setStoneNum(0);
+        //capture function
+        if (index >= 0 && index <= 5 && man[index].getStoneNum() == 1) {
+            int opposite = 12 - index;
+            int captured = man[opposite].getStoneNum();
+            if (captured > 0) {
+                man[opposite].setStoneNum(0);
+                man[index].setStoneNum(0);
+                man[6].setStoneNum(man[6].getStoneNum() + captured + 1);
+            }
         }
 
-        setPlayerAScore(man[6].getStoneNum());
-
+        syncScores();
         return index;
     }
 
@@ -97,39 +119,39 @@ public class MancalaBoard {
      * 7-12 playable-B
      * 13 mancala-B
      */
-    public int PlayPitB(MancalaPit chosenPit){
-        int stonesInHand = chosenPit.getStoneNum();
+    public int PlayPitB(MancalaPit chosenPit) {
         int index = findmancalaPit(chosenPit);
+        if (index < 7 || index > 12) throw new IllegalArgumentException("Invalid pit for B");
 
+        int stonesInHand = chosenPit.getStoneNum();
         chosenPit.setStoneNum(0);
 
-        for (stonesInHand; stonesInHand > 0; stonesInHand--) {
-            index++;//starts on adjacent pit
-            if (index == 6) {
-                stonesInHand++;//returns stone due to skipping
-                index = 7;
-                //skips Score pit for player A
-                continue;
-            }
-
+        while (stonesInHand > 0) {
+            index = (index + 1) % 14;
+            if (index == 6) continue; // skip A store
             man[index].setStoneNum(man[index].getStoneNum() + 1);
-
+            stonesInHand--;
         }
 
-        //capture function (fun fact: Waterfall playstyle would just make this a recursive function
-        if (man[index].getStoneNum() == 1 && index > 6 && index != 13) {
-            man[13] += man[index].getStoneNum() + man[12-index].getStoneNum();
-            man[index].setStoneNum(0);
-            man[12-index].setStoneNum(0);
+        //capture function
+        if (index >= 7 && index <= 12 && man[index].getStoneNum() == 1) {
+            int opposite = 12 - index;
+            int captured = man[opposite].getStoneNum();
+            if (captured > 0) {
+                man[opposite].setStoneNum(0);
+                man[index].setStoneNum(0);
+                man[13].setStoneNum(man[13].getStoneNum() + captured + 1);
+            }
         }
 
-        setPlayerBScore(man[13].getStoneNum());
-
+        syncScores();
         return index;
     }
 
-
-
+    private void syncScores() {
+        playerAScore = man[6].getStoneNum();
+        playerBScore = man[13].getStoneNum();
+    }
 
     public void setPlayerAScore(int playerAScore) {
         this.playerAScore = playerAScore;
@@ -144,13 +166,17 @@ public class MancalaBoard {
     public int getPlayerBScore() {
         return playerBScore;
     }
+
     public MancalaPit[] getMancalaPitArray() {
         return man;
     }
-    //Note: Relies on other Garbage Collection methods for each call
-    public ArrayList<MancalaPit> getBoard(){
+
+    /**
+     * Note: Relies on other Garbage Collection methods for each call
+     */
+    public ArrayList<MancalaPit> getBoard() {
         ArrayList<MancalaPit> manArray = new ArrayList<>();
-        for (int i = 0; i < 13; i++ ){
+        for (int i = 0; i < 14; i++ ) {
             manArray.add(man[i]);
         }
         return manArray;

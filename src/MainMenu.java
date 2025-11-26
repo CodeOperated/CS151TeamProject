@@ -1,63 +1,49 @@
 import java.awt.*;
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.List;
 
-class MainMenu extends JPanel{
-    String[] options = {"Wooden Mancala Board", "Metal Mancala Board"};
-	JList<String> list = new JList<>(options);
-    JScrollPane scrollPane = new JScrollPane(list);
-    int width = 120; 
-    int height = 80;
+public class MainMenu extends JPanel {
+	private final String[] options = {"Wooden Mancala Board", "Metal Mancala Board"};
+    private final JList<String> list = new JList<>(options);
+    private final JScrollPane scrollPane = new JScrollPane(list);;
+    private final String title = "Let's Play Mancala! Choose a Board Design:";
+    private JLabel label = new JLabel(title);
+    private BoardSelectionListener listener;
     
-    String title = "Let's Play Mancala! Choose a Board Design:";
-    JLabel label = new JLabel(title); 
-    MancalaTest tester = new MancalaTest();
-
+    // The available view strategies
+    private final List<BoardStrategy> strategies = Arrays.asList(
+            new WoodenBoardStrategy(),
+            new MetalBoardStrategy()
+    );
     
+    public void setBoardSelectionListener(BoardSelectionListener listener) {
+        this.listener = listener;
+    }
+    /**
+     * @param onChosen callback that receives the selected BoardStrategy when user picks a style
+     */
     public MainMenu() {
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
         label.setFont(new Font("SansSerif", Font.BOLD, 30));
         label.setForeground(Color.BLUE);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-<<<<<<< HEAD
-        list.setFont(new Font("Arial", Font.PLAIN, 20)); 
-        
-    	setLayout(new BorderLayout()); 
-    	add(label, BorderLayout.NORTH);
-    	add(scrollPane, BorderLayout.CENTER);
-=======
+        label.setHorizontalAlignment(SwingConstants.CENTER);        
+        list.setFont(new Font("Arial", Font.PLAIN, 20));
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-    	setLayout(new BorderLayout()); 
-    	add(label, BorderLayout.NORTH);
-    	add(scrollPane, BorderLayout.CENTER);
-    		
->>>>>>> f2a796f2f13faf57dc9497aa487392ce1bf9e95d
-    	
-    	list.addListSelectionListener(e -> {
-    		
-    		//prevents double clicks
-            if (!e.getValueIsAdjusting()) {  
-            	 String selected = list.getSelectedValue();
-                 tester.selectBoard(selected); 
+        add(label, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+
+        list.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int idx = list.getSelectedIndex();
+                if (idx >= 0 && idx < strategies.size()) {
+                    if (listener != null) {
+                        listener.onBoardChosen(strategies.get(idx));
+                    }
+                }
             }
         });
     }
-    
-    /**
-     * 
-     * @return - Returns the list of options. Controller is to add an action listener to each option and 
-     * invoke the corresponding board design
-     */
-    public JList<String> getMenu() {
-		return list;
-    }
-    
-    public void paintComponent(Graphics g) {
-    	
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        //update if needed
-    }
-    
-	
-	
-	
 }

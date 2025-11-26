@@ -1,6 +1,6 @@
 public class MancalaPit {
     protected int stoneNum;
-    protected boolean isPlayerAPit;
+    protected boolean ownerIsA;
     protected boolean isStore;
 
     public MancalaPit(boolean ownerIsA, boolean isStore) {

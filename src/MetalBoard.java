@@ -1,5 +1,9 @@
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+//start
+// (added for pitShape implementation)
+import java.awt.Shape;
+//end
 import javax.swing.*;
 import java.util.*;
 
@@ -32,13 +36,19 @@ public class MetalBoard extends JPanel implements BoardView {
      * The model is passed in through MetalBoard constructor
      */
     public void updatePits() {
-    	
-    	ArrayList<MancalaPit> manData = m.getBoard();
-    	
-    	for (int i = 0; i < manData.size(); i++) {
-    		PitPanel currPit = pits.get(i);
-    		currPit.setStones(manData.get(i).getStoneNum());
-    	}
+        ArrayList<MancalaPit> manData = m.getBoard();
+
+        // If pits haven't been built yet (initializePits hasn't run), bail out safely.
+        if (pits == null || pits.isEmpty()) {
+            return; // drawBoard() will build pits and then call updatePits() again
+        }
+
+        // In case sizes ever diverge, only iterate over the min size.
+        int limit = Math.min(manData.size(), pits.size());
+        for (int i = 0; i < limit; i++) {
+            PitPanel currPit = pits.get(i);
+            currPit.setStones(manData.get(i).getStoneNum());
+        }
     }
     
     public MetalBoard(MancalaBoard model) {
@@ -193,5 +203,22 @@ public class MetalBoard extends JPanel implements BoardView {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         drawBoard(g2);
+    }
+
+    @Override
+    public Shape pitShape(int row, int col) {
+        if (row != 0 && row != 1) return null;
+        if (col < 0 || col >= 6) return null;
+
+        int idx;
+        if (row == 1) { 
+            idx = col;
+        } else {       
+            idx = 7 + col;
+        }
+
+        if (idx < 0 || idx >= pits.size()) return null;
+        Rectangle b = pits.get(idx).getBounds();
+        return new Rectangle2D.Float(b.x, b.y, b.width, b.height);
     }
 }

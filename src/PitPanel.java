@@ -25,11 +25,15 @@ class PitPanel extends JPanel {
     
     public void setStones(int stoneCount) {
         this.stoneCount = stoneCount;
-       
+
+        // Clear old stones so we don't keep adding more every update
+        removeAll();
+
         for (int i = 0; i < this.stoneCount; i++) {
             add(new StoneIcon());
         }
 
-        revalidate(); 
+        revalidate();
+        repaint();
     }
 }

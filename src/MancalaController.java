@@ -1,0 +1,281 @@
+import java.awt.Point;
+import java.awt.Shape;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+
+
+public class MancalaController {
+    public enum Player { A, B }
+
+    private boolean undo = true;
+    private final MancalaBoard model;
+    private final BoardView view;
+    private final JComponent viewComponent;
+    private final JLabel turnLabel;
+    private final JButton returnButton;
+    private final JButton undoButton;
+    
+    private Player currentPlayer = Player.A;
+    private boolean gameOver = false;
+
+    private static class Snapshot {
+        final int[] stones;
+        final Player player;
+        Snapshot(int[] stones, Player player) {
+            this.stones = stones;
+            this.player = player;
+        }
+    }
+    private final Deque<Snapshot> history = new ArrayDeque<>();
+
+    // per-player undo tracking
+    private int undoCountA = 0;
+    private int undoCountB = 0;
+
+    private int getUndoCount(Player p) {
+    	int count;
+    	if(p == Player.A) {
+    		count = undoCountA;
+    	} else {
+    		count = undoCountB;
+    	}
+        return count;
+    }
+
+    private void incrementUndo(Player p) {
+        if (p == Player.A) undoCountA++;
+        else undoCountB++;
+    }
+
+    private void resetUndo(Player p) {
+        if (p == Player.A) undoCountA = 0;
+        else undoCountB = 0;
+    }
+
+    public MancalaController(MancalaBoard model,
+                             BoardView view,
+                             JComponent viewComponent,
+                             JLabel turnLabel,
+                             JButton undoButton,
+                             JButton returnButton) {
+        this.model = model;
+        this.view = view;
+        this.viewComponent = viewComponent;
+        this.turnLabel = turnLabel;
+        this.undoButton = undoButton;
+        this.returnButton = returnButton;
+        this.returnButton.setVisible(false);
+        
+        // initial state
+        pushHistory();      // starting board, A to move
+        hookMouse();
+        this.view.updatePits();
+        updateTurnLabel();
+    }
+
+    private void hookMouse() {
+        viewComponent.addMouseListener(new MouseAdapter() {
+            @Override 
+            public void mouseClicked(MouseEvent e) {
+                int pit = hitTestPit(e.getPoint());
+                if (pit >= 0) handlePitClick(pit);
+            }
+        });
+    }
+
+    private int hitTestPit(Point p) {
+        // Bottom A row: 0..5
+        for (int col = 0; col < 6; col++) {
+            Shape s = view.pitShape(1, col);
+            if (s != null && s.contains(p)) return col;
+        }
+        // Top B row: 12..7 (left->right visually)
+        for (int col = 0; col < 6; col++) {
+            Shape s = view.pitShape(0, col);
+            if (s != null && s.contains(p)) return col+7;
+        }
+        return -1;
+    }
+
+    private void handlePitClick(int pitIndex) {
+        // no moves after game over
+        if (gameOver) return;
+
+        if (!isPlayableForCurrentPlayer(pitIndex)) return;
+        if (model.getMancalaPitArray()[pitIndex].getStoneNum() == 0) return;
+
+        Player mover = currentPlayer;
+
+        int lastIndex;
+        if(currentPlayer == Player.A) {
+        	lastIndex = model.PlayPitA(model.getMancalaPitArray()[pitIndex]);
+        } else {
+        	lastIndex = model.PlayPitB(model.getMancalaPitArray()[pitIndex]);
+        }
+        view.updatePits();
+
+        // ---- game-over check (one side empty) ----
+        if (isSideEmpty(0, 5) || isSideEmpty(7, 12)) {
+            sweepRemaining();
+            view.updatePits();
+            gameOver = true;
+
+            resetUndo(mover);
+
+            pushHistory();
+            updateTurnLabel();  
+            return;
+        }
+
+        boolean extraTurn = (currentPlayer == Player.A && lastIndex == 6)
+                         || (currentPlayer == Player.B && lastIndex == 13);
+
+        resetUndo(mover); 
+
+        if (!extraTurn) {
+            switchTurn();
+        }
+        undo = true;
+        // snapshot AFTER the move (so each undo undoes exactly 1 move)
+        pushHistory();
+        updateTurnLabel();
+    }
+
+    private boolean isPlayableForCurrentPlayer(int pitIndex) {
+        if (pitIndex == 6 || pitIndex == 13) return false; // stores
+        if(currentPlayer == Player.A) {
+        	return (pitIndex >= 0 && pitIndex <= 5);
+        } else {
+        	return (pitIndex >= 7 && pitIndex <= 12);
+        }
+    }
+
+    private void switchTurn() {
+        if(currentPlayer == Player.A) {
+        	currentPlayer = Player.B;
+        } else {
+        	currentPlayer = Player.A;
+        }
+    }
+
+    private void pushHistory() {
+        history.push(new Snapshot(model.snapshot(), currentPlayer));
+    }
+
+    public void undo() {
+    	if(undo == true) {
+    		undo = false;
+            Player requester = currentPlayer;
+
+            // no more than 3 undos per player
+            if (getUndoCount(requester) >= 3) return;
+
+            if (history.size() <= 1) return; // nothing to undo
+
+            // current state is top of stack; previous is one move ago
+            history.pop();
+            Snapshot prev = history.peek();
+            if (prev == null) return;
+
+            model.restore(prev.stones);
+            currentPlayer = prev.player;
+
+            incrementUndo(requester);
+
+            view.updatePits();
+            viewComponent.repaint();
+            updateTurnLabel();
+            
+    	} else {
+    		return;
+    	}
+
+        
+    }
+
+    public Player getCurrentPlayer() { return currentPlayer; }
+    public void refresh() { view.updatePits(); viewComponent.repaint(); }
+
+    // ---------- game-over helpers ----------
+
+    private boolean isSideEmpty(int lo, int hi) {
+        MancalaPit[] pits = model.getMancalaPitArray();
+        for (int i = lo; i <= hi; i++) {
+            if (pits[i].getStoneNum() > 0) return false;
+        }
+        return true;
+    }
+
+    /** Sweep remaining stones from non-empty side to its store (once, at game end). */
+    private void sweepRemaining() {
+        MancalaPit[] pits = model.getMancalaPitArray();
+        boolean aEmpty = isSideEmpty(0, 5);
+        boolean bEmpty = isSideEmpty(7, 12);
+
+        if (aEmpty && !bEmpty) {
+            int sum = 0;
+            for (int i = 7; i <= 12; i++) {
+                sum += pits[i].getStoneNum();
+                pits[i].setStoneNum(0);
+            }
+            pits[13].setStoneNum(pits[13].getStoneNum() + sum); // B store
+        } else if (bEmpty && !aEmpty) {
+            int sum = 0;
+            for (int i = 0; i <= 5; i++) {
+                sum += pits[i].getStoneNum();
+                pits[i].setStoneNum(0);
+            }
+            pits[6].setStoneNum(pits[6].getStoneNum() + sum); // A store
+        }
+        // if both somehow empty, nothing else to sweep
+    }
+
+    // ---------- label text ----------
+
+    private void updateTurnLabel() {
+        if (turnLabel == null) return;
+
+        if (gameOver) {
+        	undo = false;
+            MancalaPit[] pits = model.getMancalaPitArray();
+            int scoreA = pits[6].getStoneNum();
+            int scoreB = pits[13].getStoneNum();
+
+            String msg;
+            if (scoreA > scoreB) {
+                msg = "Game over: Player A wins (" + scoreA + " - " + scoreB + ")";
+            } else if (scoreB > scoreA) {
+                msg = "Game over: Player B wins (" + scoreB + " - " + scoreA + ")";
+            } else {
+                msg = "Game over: Tie (" + scoreA + " - " + scoreB + ")";
+            }
+            turnLabel.setText(msg);
+            if (undoButton != null) {
+                undoButton.setEnabled(false);
+            }
+            if (returnButton != null) {
+                returnButton.setVisible(true);
+            }
+        } else {
+            String text;
+            if(currentPlayer == Player.A) {
+            	text = "Player A's turn";
+            } else {
+            	text = "Player B's turn";
+            }
+            turnLabel.setText(text);
+            if (returnButton != null) {
+                returnButton.setVisible(false);
+            }
+            if (undoButton != null) {
+                undoButton.setEnabled(true);
+            }
+        }
+    }
+}
