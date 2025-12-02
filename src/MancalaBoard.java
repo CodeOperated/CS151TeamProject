@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 
-/**
+/** MancalaBoard class created by Jose
  * Virtual representation of a Mancala board with actions included, no rules are provided for turn taking
  *
  */
@@ -29,6 +29,26 @@ public class MancalaBoard {
         for(int i = 0; i < man.length;){
             if (i != 6 && i != 13) man[i].setStoneNum(StartingStones);
             else continue;
+        }
+    }
+
+    /**
+     * Constructs Mancala board with manually setting each stone for each pit using an integer array
+     * @param int[] StartingStones
+     */
+    MancalaBoard(int[] StartingStones){
+        for(int i = 0; i < man.length;){
+            man[i].setStoneNum(StartingStones[i]);
+        }
+    }
+
+    /**
+     * Constructs Mancala board with manually setting each stone for each pit using a MancalaPit array
+     * @param MancalaPit[] StartingStones
+     */
+    MancalaBoard(MancalaPit[] StartingStones){
+        for(int i = 0; i < man.length;){
+            man[i].setStoneNum(StartingStones[i].getStoneNum());
         }
     }
 
@@ -132,24 +152,49 @@ public class MancalaBoard {
     }
 
 
-
-
+    /**
+     * Sets playerAScore and Mancala
+     * @param playerAScore
+     */
     public void setPlayerAScore(int playerAScore) {
+        man[6].setStoneNum() = playerAScore;
         this.playerAScore = playerAScore;
     }
+
+    /**
+     * Sets playerBScore and Mancala
+     * @param playerBScore
+     */
     public void setPlayerBScore(int playerBScore) {
+        man[13].setStoneNum() = playerBScore;
         this.playerBScore = playerBScore;
     }
 
+    /**
+     * updates and returns playerA Mancala score as an integer value
+     * @return playerAScore
+     */
     public int getPlayerAScore() {
+        this.playerAScore = man[6].getStoneNum();
         return playerAScore;
     }
+
+    /**
+     * updates and returns playerB Mancala score as an integer value
+     * @return playerBScore
+     */
     public int getPlayerBScore() {
+        this.playerAScore = man[13].getStoneNum();
         return playerBScore;
     }
     public MancalaPit[] getMancalaPitArray() {
         return man;
     }
+
+    /**
+     * Converts MancalaPit Array into MancalaPit Arraylist for compatibility
+     * @return ArrayList
+     */
     //Note: Relies on other Garbage Collection methods for each call
     public ArrayList<MancalaPit> getBoard(){
         ArrayList<MancalaPit> manArray = new ArrayList<>();
