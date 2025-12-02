@@ -3,7 +3,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
-
 import javax.swing.JLabel;
 
 class StoneIcon extends JLabel{
@@ -13,6 +12,10 @@ class StoneIcon extends JLabel{
         setPreferredSize(new Dimension(STONE_SIZE, STONE_SIZE)); // <--- add this
 
 	}
+	
+	/**
+	 * @param g - Graphics
+	 */
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;

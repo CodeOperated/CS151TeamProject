@@ -1,9 +1,6 @@
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-//start
-// (added for pitShape implementation)
 import java.awt.Shape;
-//end
 import javax.swing.*;
 import java.util.*;
 
@@ -57,7 +54,7 @@ public class MetalBoard extends JPanel implements BoardView {
     
     /**
      * 
-     * @return 
+     * @return pits
      */
     public ArrayList<PitPanel> getPitPanels(){
 		return pits;
@@ -179,7 +176,7 @@ public class MetalBoard extends JPanel implements BoardView {
     	    int yB = startAtY;
     	    for (int col = COLS - 1; col >= 0; col--) {
     	        int x = startAtX + col * (PIT_SIZE + pitSpacingX);
-    	        String label = "B" + (col + 1);
+    	        String label = "B" + (COLS  - col);
     	        FontMetrics fm = g2.getFontMetrics();
     	        int textX = x + (PIT_SIZE - fm.stringWidth(label)) / 2;
     	        int textY = yB - 10;
@@ -206,6 +203,11 @@ public class MetalBoard extends JPanel implements BoardView {
     }
 
     @Override
+    /**
+     * @param row - row of pit
+     * @param col - column if pit
+     * @return Shape - the shape of pit
+     */
     public Shape pitShape(int row, int col) {
         if (row != 0 && row != 1) return null;
         if (col < 0 || col >= 6) return null;

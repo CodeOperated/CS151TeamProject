@@ -19,7 +19,10 @@ public class MancalaTest {
         });
     }
 
-    /** Show the main menu and wire up the board-selection listener. */
+    /** Show the main menu and wire up the board-selection listener. 
+     * 
+     * @param frame - Jframe
+     */
     private static void showMenu(JFrame frame) {
         MainMenu menu = new MainMenu();
         menu.setBoardSelectionListener(strategy -> startGame(frame, strategy));
@@ -30,7 +33,11 @@ public class MancalaTest {
         frame.repaint();
     }
 
-    /** Start a new game with the chosen board strategy. */
+    /** Start a new game with the chosen board strategy. 
+     * 
+     * @param frame - JFrame
+     * @param strategy - the board strategy (metal or wooden)
+     */
     private static void startGame(JFrame frame, BoardStrategy strategy) {
 
         MancalaBoard emptyModel = new MancalaBoard(0);
@@ -79,7 +86,9 @@ public class MancalaTest {
         frame.repaint();
     }
 
-    /** Prompt user for stones per pit (3 or 4), default to 4 if Cancel. */
+    /** Prompt user for stones per pit (3 or 4), default to 4 if Cancel. 
+     * @param parent Component
+     */
     private static int askInitialStones(Component parent) {
         while (true) {
             String input = JOptionPane.showInputDialog(

@@ -17,11 +17,15 @@ public class MainMenu extends JPanel {
             new MetalBoardStrategy()
     );
     
+    /**
+     * set listener for board selection
+     * @param listener BoardSelectionListener
+     */
     public void setBoardSelectionListener(BoardSelectionListener listener) {
         this.listener = listener;
     }
     /**
-     * @param onChosen callback that receives the selected BoardStrategy when user picks a style
+     * Main menu layout
      */
     public MainMenu() {
         setLayout(new BorderLayout());
