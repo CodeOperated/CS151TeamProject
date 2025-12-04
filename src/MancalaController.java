@@ -9,10 +9,11 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 
+
 public class MancalaController {
 	//enum for player turn
     public enum Player { A, B }
-    
+
     //fields
     private boolean undo = true;
     private final MancalaBoard model;
@@ -21,13 +22,9 @@ public class MancalaController {
     private final JLabel turnLabel;
     private final JButton returnButton;
     private final JButton undoButton;
+
     private Player currentPlayer = Player.A;
     private boolean gameOver = false;
-    private final Deque<Snapshot> history = new ArrayDeque<>();
-    
-    // per-player undo tracking
-    private int undoCountA = 0;
-    private int undoCountB = 0;
     
     //keep a single snapshot for a turn
     private static class Snapshot {
@@ -38,6 +35,11 @@ public class MancalaController {
             this.player = player;
         }
     }
+    private final Deque<Snapshot> history = new ArrayDeque<>();
+
+    // per-player undo tracking
+    private int undoCountA = 0;
+    private int undoCountB = 0;
     
     /**
      * get the undo number this turn
@@ -45,15 +47,9 @@ public class MancalaController {
      * @return count int - the number of undo performed this turn.
      */
     private int getUndoCount(Player p) {
-    	int count;
-    	if(p == Player.A) {
-    		count = undoCountA;
-    	} else {
-    		count = undoCountB;
-    	}
-        return count;
+        return (p == Player.A) ? undoCountA : undoCountB;
     }
-
+    
     /**
      * increase undo count
      * @param p - the player to increase undo count
@@ -73,9 +69,7 @@ public class MancalaController {
         if (p == Player.A) {
         	undoCountA = 0;
         }
-        else {
-        	undoCountB = 0;
-        }
+        else undoCountB = 0;
     }
     
     /**
@@ -99,22 +93,23 @@ public class MancalaController {
         this.turnLabel = turnLabel;
         this.undoButton = undoButton;
         this.returnButton = returnButton;
-        this.returnButton.setVisible(false);
-        
-        // initial state
-        pushHistory();      // starting board, A to move
+
+        if (this.returnButton != null) {
+            this.returnButton.setVisible(false);
+        }
+
+        this.model.addView(this.view);
+        pushHistory();      
         hookMouse();
-        this.view.updatePits();
         updateTurnLabel();
     }
-
+    
     /**
      * added mouse listener
      */
     private void hookMouse() {
         viewComponent.addMouseListener(new MouseAdapter() {
-            @Override 
-            public void mouseClicked(MouseEvent e) {
+            @Override public void mouseClicked(MouseEvent e) {
                 int pit = hitTestPit(e.getPoint());
                 if (pit >= 0) {
                 	handlePitClick(pit);
@@ -129,18 +124,16 @@ public class MancalaController {
      * @return int of the pit that is clicked
      */
     private int hitTestPit(Point p) {
-        // Bottom A row: 0..5
         for (int col = 0; col < 6; col++) {
             Shape s = view.pitShape(1, col);
             if (s != null && s.contains(p)) {
             	return col;
             }
         }
-        // Top B row: 12..7 (left->right visually)
         for (int col = 0; col < 6; col++) {
             Shape s = view.pitShape(0, col);
             if (s != null && s.contains(p)) {
-            	return col+7;
+            	return col + 7;
             }
         }
         return -1;
@@ -155,29 +148,30 @@ public class MancalaController {
         	return;
         }
 
-        if (!isPlayableForCurrentPlayer(pitIndex)) return;
-        if (model.getMancalaPitArray()[pitIndex].getStoneNum() == 0) return;
+        if (!isPlayableForCurrentPlayer(pitIndex)) {
+        	return;
+        }
+        if (model.getMancalaPitArray()[pitIndex].getStoneNum() == 0) {
+        	return;
+        }
 
         Player mover = currentPlayer;
 
         int lastIndex;
         if(currentPlayer == Player.A) {
-        	lastIndex = model.PlayPitA(model.getMancalaPitArray()[pitIndex]);
+                	lastIndex = model.PlayPitA(model.getMancalaPitArray()[pitIndex]);
         } else {
-        	lastIndex = model.PlayPitB(model.getMancalaPitArray()[pitIndex]);
+                	lastIndex = model.PlayPitB(model.getMancalaPitArray()[pitIndex]);
         }
-        view.updatePits();
 
-        // ---- game-over check (one side empty) ----
         if (isSideEmpty(0, 5) || isSideEmpty(7, 12)) {
-            sweepRemaining();
-            view.updatePits();
+            sweepRemaining(); 
             gameOver = true;
 
             resetUndo(mover);
 
             pushHistory();
-            updateTurnLabel();  
+            updateTurnLabel(); 
             return;
         }
 
@@ -187,14 +181,13 @@ public class MancalaController {
         } else {
         	extraTurn = false;
         }
-        
-        resetUndo(mover); 
+
+        resetUndo(mover);  
 
         if (!extraTurn) {
             switchTurn();
         }
         undo = true;
-
         pushHistory();
         updateTurnLabel();
     }
@@ -205,26 +198,19 @@ public class MancalaController {
      * @return boolean - true if player A clicked 0-5 or player B clicked 7-12; false otherwise
      */
     private boolean isPlayableForCurrentPlayer(int pitIndex) {
-        if (pitIndex == 6 || pitIndex == 13) {
-        	return false; // stores
-        }
-        if(currentPlayer == Player.A) {
-        	return (pitIndex >= 0 && pitIndex <= 5);
-        } else {
-        	return (pitIndex >= 7 && pitIndex <= 12);
-        }
+        if (pitIndex == 6 || pitIndex == 13) return false; // stores
+        return (currentPlayer == Player.A)
+                ? (pitIndex >= 0 && pitIndex <= 5)
+                : (pitIndex >= 7 && pitIndex <= 12);
     }
     
     /**
      * switch turn after player makes move
      */
     private void switchTurn() {
-        if(currentPlayer == Player.A) {
-        	currentPlayer = Player.B;
-        } else {
-        	currentPlayer = Player.A;
-        }
+        currentPlayer = (currentPlayer == Player.A) ? Player.B : Player.A;
     }
+    
     
     /**
      * save the resulting board state after each move so that the next undo will return to this state.
@@ -233,42 +219,40 @@ public class MancalaController {
         history.push(new Snapshot(model.snapshot(), currentPlayer));
     }
     
+    
     /**
      * undo the last move by popping the latest snapshot and load the most recent one
      */
     public void undo() {
-    	if(undo == true) {
-    		undo = false;
+        if (undo == true) {
+            undo = false;
             Player requester = currentPlayer;
 
-            // no more than 3 undos per player
             if (getUndoCount(requester) >= 3) {
             	return;
             }
 
             if (history.size() <= 1) {
-            	return; // nothing to undo
+            	return; 
             }
 
-            // current state is top of stack; previous is one move ago
             history.pop();
             Snapshot prev = history.peek();
             if (prev == null) {
             	return;
             }
 
-            model.restore(prev.stones);
+            model.restore(prev.stones);   
             currentPlayer = prev.player;
 
+            gameOver = isSideEmpty(0, 5) || isSideEmpty(7, 12);
             incrementUndo(requester);
 
-            view.updatePits();
             viewComponent.repaint();
             updateTurnLabel();
-            
-    	} else {
-    		return;
-    	}
+        } else {
+            return;
+        }
     }
     
     /**
@@ -278,16 +262,9 @@ public class MancalaController {
     public Player getCurrentPlayer() { 
     	return currentPlayer; 
     }
-    
-    /**
-     * refresh view and repaint
-     */
-    public void refresh() { 
-    	view.updatePits(); 
-    	viewComponent.repaint(); 
-    }
 
     // ---------- game-over helpers ----------
+    
     /**
      * check if pits within lo and hi is empty
      * @param lo - lower bound of index
@@ -316,30 +293,25 @@ public class MancalaController {
                 sum += pits[i].getStoneNum();
                 pits[i].setStoneNum(0);
             }
-            pits[13].setStoneNum(pits[13].getStoneNum() + sum); // B store
+            pits[13].setStoneNum(pits[13].getStoneNum() + sum); 
         } else if (bEmpty && !aEmpty) {
             int sum = 0;
             for (int i = 0; i <= 5; i++) {
                 sum += pits[i].getStoneNum();
                 pits[i].setStoneNum(0);
             }
-            pits[6].setStoneNum(pits[6].getStoneNum() + sum); // A store
+            pits[6].setStoneNum(pits[6].getStoneNum() + sum); 
         }
-        // if both somehow empty, nothing else to sweep
+        model.restore(model.snapshot()); 
     }
 
     // ---------- label text ----------
     
-    /**
-     * update the turn label for the game
-     */
     private void updateTurnLabel() {
-        if (turnLabel == null) {
-        	return;
-        }
+        if (turnLabel == null) return;
 
         if (gameOver) {
-        	undo = false;
+            undo = false;
             MancalaPit[] pits = model.getMancalaPitArray();
             int scoreA = pits[6].getStoneNum();
             int scoreB = pits[13].getStoneNum();
@@ -360,12 +332,9 @@ public class MancalaController {
                 returnButton.setVisible(true);
             }
         } else {
-            String text;
-            if(currentPlayer == Player.A) {
-            	text = "Player A's turn";
-            } else {
-            	text = "Player B's turn";
-            }
+            String text = (currentPlayer == Player.A)
+                    ? "Player A's turn"
+                    : "Player B's turn";
             turnLabel.setText(text);
             if (returnButton != null) {
                 returnButton.setVisible(false);
