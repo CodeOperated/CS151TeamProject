@@ -1,6 +1,6 @@
 /**
  * CS 151 Final Project Solution 
- * @author Hien Ly, Jose Quevado
+ * @author Hien Ly, Jose Quevedo
  * @version 1.0 12/4/2025
  */
 
