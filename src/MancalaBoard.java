@@ -1,4 +1,6 @@
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Virtual representation of a Mancala board with actions included, no rules are provided for turn taking
@@ -10,6 +12,26 @@ public class MancalaBoard {
     int playerAScore;
     int playerBScore;
 
+    private final List<BoardView> views = new ArrayList<>();
+    
+    
+    public void addView(BoardView v) {
+        if (v != null && !views.contains(v)) {
+            views.add(v);
+        }
+    }
+
+    public void removeView(BoardView v) {
+        views.remove(v);
+    }
+
+    private void notifyViews() {
+        for (BoardView v : views) {
+            v.updatePits();
+        }
+    }
+
+
     /**
      * Constructs Mancala Board with default stone settings - leftmost playable pit is MancalaPit[0]
      */
@@ -19,7 +41,7 @@ public class MancalaBoard {
 
     /**
      * Constructs Mancala board with a custom set
-     * @param StartingStones - int number of stone to start
+     * @param StartingStones
      */
     public MancalaBoard(int StartingStones) {
 
@@ -54,9 +76,7 @@ public class MancalaBoard {
         return -1;
     }
 
-    /** Snapshot of the board counts (14 ints). 
-     * @return s - int array for current turn
-     */
+    /** Snapshot of the board counts (14 ints). */
     public int[] snapshot() {
         int[] s = new int[14];
         for (int i = 0; i < 14; i++) s[i] = man[i].getStoneNum();
@@ -68,6 +88,9 @@ public class MancalaBoard {
         if (snap == null || snap.length != 14) throw new IllegalArgumentException("Bad snapshot");
         for (int i = 0; i < 14; i++) man[i].setStoneNum(snap[i]);
         syncScores();
+
+        notifyViews();
+  
     }
 
     /**
@@ -107,6 +130,9 @@ public class MancalaBoard {
         }
 
         syncScores();
+
+        notifyViews();
+
         return index;
     }
 
@@ -147,42 +173,27 @@ public class MancalaBoard {
         }
 
         syncScores();
+
+        notifyViews();
+
         return index;
     }
 
-    /**
-     * synchronize the store currently in score pit.
-     */
     private void syncScores() {
         playerAScore = man[6].getStoneNum();
         playerBScore = man[13].getStoneNum();
     }
 
-    /**
-     * set score for player
-     * @param playerAScore int - score to set
-     */
     public void setPlayerAScore(int playerAScore) {
         this.playerAScore = playerAScore;
     }
-    /**
-     * set score for player
-     * @param playerBScore int - score to set
-     */
     public void setPlayerBScore(int playerBScore) {
         this.playerBScore = playerBScore;
     }
-    /**
-     * get score of player A
-     * @return playerAScore int - score of player A
-     */
+
     public int getPlayerAScore() {
         return playerAScore;
     }
-    /**
-     * get score of player B
-     * @return playerBScore int - score of player B
-     */
     public int getPlayerBScore() {
         return playerBScore;
     }
@@ -193,7 +204,6 @@ public class MancalaBoard {
 
     /**
      * Note: Relies on other Garbage Collection methods for each call
-     * @return manArray - the array list version of the board (array)
      */
     public ArrayList<MancalaPit> getBoard() {
         ArrayList<MancalaPit> manArray = new ArrayList<>();
