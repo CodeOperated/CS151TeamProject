@@ -1,4 +1,10 @@
 /**
+ * CS 151 Final Project Solution 
+ * @author Jose Quevado
+ * @version 1.0 12/4/2025
+ */
+
+/**
  * Represents the outcome of a single Mancala move.
  * Returned by the model after a pit is played.
  */

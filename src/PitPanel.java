@@ -1,8 +1,16 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Emily Thach
+ * @version 1.0 12/4/2025
+ */
+
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-
 import javax.swing.*;
 
+/**
+ * A panel representing a pit on the Mancala board.
+ */
 class PitPanel extends JPanel {
     private Color c;
     private int stoneCount;

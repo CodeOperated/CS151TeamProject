@@ -1,3 +1,12 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Hien Ly
+ * @version 1.0 12/4/2025
+ */
+
+/**
+ * Metal board strategy implementation, to plug in the Metal board view.
+ */
 public class MetalBoardStrategy implements BoardStrategy {
     @Override 
     /**

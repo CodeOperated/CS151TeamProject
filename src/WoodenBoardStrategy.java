@@ -1,3 +1,12 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Hien Ly
+ * @version 1.0 12/4/2025
+ */
+
+/**
+ * Wooden board strategy implementation, to plug in the Wooden board view.
+ */
 public class WoodenBoardStrategy implements BoardStrategy {
     @Override 
     /**

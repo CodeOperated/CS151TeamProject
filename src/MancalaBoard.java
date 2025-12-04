@@ -1,9 +1,14 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Hien Ly, Jose Quevado
+ * @version 1.0 12/4/2025
+ */
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Virtual representation of a Mancala board with actions included, no rules are provided for turn taking
- *
  */
 public class MancalaBoard {
 

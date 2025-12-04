@@ -1,3 +1,9 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Hien Ly
+ * @version 1.0 12/4/2025
+ */
+
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.event.MouseAdapter;

@@ -1,3 +1,9 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Emily Thach
+ * @version 1.0 12/4/2025
+ */
+
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.Shape;

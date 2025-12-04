@@ -1,6 +1,14 @@
+/**
+ * CS 151 HW4 Solution 
+ * @author Emily Thach, Hien Ly
+ * @version 1.0 11/11/2025
+ */
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Main class to run the Mancala game.
+ */
 public class MancalaTest {
 
     public static void main(String[] args) {

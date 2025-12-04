@@ -1,8 +1,17 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Hien Ly, Emily Thach
+ * @version 1.0 12/4/2025
+ */
+
 import java.awt.*;
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Main menu panel for selecting board design.
+ */
 public class MainMenu extends JPanel {
 	private final String[] options = {"Wooden Mancala Board", "Metal Mancala Board"};
     private final JList<String> list = new JList<>(options);

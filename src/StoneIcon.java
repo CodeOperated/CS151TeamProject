@@ -1,3 +1,9 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Emily Thach
+ * @version 1.0 12/4/2025
+ */
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -6,6 +12,9 @@ import java.awt.geom.Ellipse2D;
 
 import javax.swing.JLabel;
 
+/**
+ * A icon representation of a stone in the Mancala game.
+ */
 class StoneIcon extends JLabel{
 	private static int STONE_SIZE = 10; 
 	

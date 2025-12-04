@@ -1,3 +1,12 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Hien Ly
+ * @version 1.0 12/4/2025
+ */
+
+/**
+ * Board view interface.
+ */
 import java.awt.Graphics2D;
 import java.awt.Shape;
 

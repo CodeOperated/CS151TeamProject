@@ -1,3 +1,12 @@
+/**
+ * CS 151 Final Project Solution 
+ * @author Jose Quevado
+ * @version 1.0 12/4/2025
+ */
+
+/**
+ * Virtual representation of a Mancala pit
+ */
 public class MancalaPit {
     protected int stoneNum;
     protected boolean ownerIsA;
