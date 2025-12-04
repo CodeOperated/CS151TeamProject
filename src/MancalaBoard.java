@@ -19,6 +19,7 @@ public class MancalaBoard {
             else continue;
 
         }
+        updatePits();
     }
 
     /**
@@ -30,6 +31,7 @@ public class MancalaBoard {
             if (i != 6 && i != 13) man[i].setStoneNum(StartingStones);
             else continue;
         }
+        updatePits();
     }
 
     /**
@@ -40,6 +42,7 @@ public class MancalaBoard {
         for(int i = 0; i < man.length;){
             man[i].setStoneNum(StartingStones[i]);
         }
+        updatePits();
     }
 
     /**
@@ -50,6 +53,7 @@ public class MancalaBoard {
         for(int i = 0; i < man.length;){
             man[i].setStoneNum(StartingStones[i].getStoneNum());
         }
+        updatePits();
     }
 
     /**
@@ -106,6 +110,8 @@ public class MancalaBoard {
 
         setPlayerAScore(man[6].getStoneNum());
 
+        updatePits();
+
         return index;
     }
 
@@ -148,6 +154,8 @@ public class MancalaBoard {
 
         setPlayerBScore(man[13].getStoneNum());
 
+        updatePits();
+
         return index;
     }
 
@@ -159,6 +167,7 @@ public class MancalaBoard {
     public void setPlayerAScore(int playerAScore) {
         man[6].setStoneNum() = playerAScore;
         this.playerAScore = playerAScore;
+        updatePits();
     }
 
     /**
@@ -168,6 +177,7 @@ public class MancalaBoard {
     public void setPlayerBScore(int playerBScore) {
         man[13].setStoneNum() = playerBScore;
         this.playerBScore = playerBScore;
+        updatePits();
     }
 
     /**
